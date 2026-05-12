@@ -138,6 +138,11 @@ class _ChannelList:
         if add:
             logger.info("Channel added: %s", channel.name)
 
+    def remove(self, channel: Channel) -> None:
+        self._channels.pop(channel.iid, None)
+        if self._watching == channel.iid:
+            self._watching = None
+
 
 class _InventoryOverview:
     def __init__(self) -> None:

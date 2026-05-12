@@ -108,6 +108,18 @@ def test_headless_tray_notify_is_available() -> None:
     gui.tray.notify("title", "message")
 
 
+def test_headless_channel_list_supports_remove() -> None:
+    class DummyChannel:
+        iid = "abc"
+        name = "chan"
+
+    channels = GUIManager(DummyTwitch()).channels
+    channel = DummyChannel()
+    channels.display(channel, add=True)
+    channels.remove(channel)
+    assert channels._channels == {}
+
+
 def test_daemon_artifacts_exist_and_reference_headless_runner() -> None:
     runner = ROOT / "run_headless.sh"
     env_example = ROOT / "contrib" / "twitchdropsminer.account.env.example"
