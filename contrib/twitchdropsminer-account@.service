@@ -1,0 +1,25 @@
+[Unit]
+Description=Twitch Drops Miner headless (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/twitchdropsminer/accounts/%i
+Environment=TDM_ACCOUNT_NAME=%i
+Environment=TDM_ACCOUNT_ROOT=/opt/twitchdropsminer/accounts
+EnvironmentFile=-/opt/twitchdropsminer/accounts/%i/.env
+ExecStart=/opt/twitchdropsminer/run_headless.sh
+Restart=always
+RestartSec=15
+KillSignal=SIGINT
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/opt/twitchdropsminer
+
+[Install]
+WantedBy=multi-user.target

@@ -110,16 +110,45 @@ def test_headless_tray_notify_is_available() -> None:
 
 def test_daemon_artifacts_exist_and_reference_headless_runner() -> None:
     runner = ROOT / "run_headless.sh"
-    env_example = ROOT / "contrib" / "twitchdropsminer.env.example"
-    service = ROOT / "contrib" / "twitchdropsminer@.service"
+    env_example = ROOT / "contrib" / "twitchdropsminer.account.env.example"
+    service = ROOT / "contrib" / "twitchdropsminer-account@.service"
     readme = ROOT / "README.md"
 
     assert runner.exists()
     assert env_example.exists()
     assert service.exists()
     assert "ExecStart=/opt/twitchdropsminer/run_headless.sh" in service.read_text()
-    assert "TDM_PRIORITY_MODE=priority-only" in env_example.read_text()
-    assert "./run_headless.sh" in readme.read_text()
+    assert "TDM_ACCOUNT_NAME=acc1" in env_example.read_text()
+    assert "setup_multi_account.sh" in readme.read_text()
+    assert "Bahasa Indonesia" in readme.read_text()
+
+
+def test_setup_multi_account_script_validates_range_and_creates_default_two() -> None:
+    script = ROOT / "setup_multi_account.sh"
+    tmp_root = ROOT / "tmp_test_accounts"
+    if tmp_root.exists():
+        import shutil
+        shutil.rmtree(tmp_root)
+
+    result = subprocess.run(
+        ["bash", str(script), str(tmp_root), "2"],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert (tmp_root / "acc1" / ".env").exists()
+    assert (tmp_root / "acc2" / ".env").exists()
+
+    bad = subprocess.run(
+        ["bash", str(script), str(tmp_root), "21"],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert bad.returncode != 0
 
 
 def test_cli_version_runs_without_gui() -> None:

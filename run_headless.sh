@@ -11,6 +11,18 @@ else
   PYTHON_BIN="$SYSTEM_PYTHON"
 fi
 
+ACCOUNT_NAME="${TDM_ACCOUNT_NAME:-default}"
+ACCOUNT_ROOT="${TDM_ACCOUNT_ROOT:-$DIRPATH/accounts}"
+ACCOUNT_DIR="${TDM_ACCOUNT_DIR:-$ACCOUNT_ROOT/$ACCOUNT_NAME}"
+ENV_FILE="${TDM_ENV_FILE:-$ACCOUNT_DIR/.env}"
+
+mkdir -p "$ACCOUNT_DIR"
+
+if [[ -f "$ENV_FILE" ]]; then
+  # shellcheck disable=SC1090
+  set -a; source "$ENV_FILE"; set +a
+fi
+
 : "${TDM_PRIORITY:=}"
 : "${TDM_EXCLUDE:=}"
 : "${TDM_PRIORITY_MODE:=}"
@@ -46,5 +58,5 @@ if [[ -n "$TDM_EXTRA_ARGS" ]]; then
   ARGS+=("${EXTRA_ARGS[@]}")
 fi
 
-cd "$DIRPATH"
+cd "$ACCOUNT_DIR"
 exec "$PYTHON_BIN" "${ARGS[@]}"
